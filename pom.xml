@@ -1,41 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2010-2015 Lazery Attack - http://www.lazeryattack.com ~ http://www.lazerycode.com
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <groupId>com.lazerycode.selenium</groupId>
+    <groupId>com.exrates.selenium</groupId>
     <artifactId>maven-template</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
 
     <name>Selenium Maven Template</name>
     <description>A Maven Template For Selenium</description>
-    <url>http://www.lazerycode.com</url>
-
-    <licenses>
-        <license>
-            <name>Apache 2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,16 +20,13 @@
         <assertj-core.version>3.12.2</assertj-core.version>
         <testng.version>6.14.3</testng.version>
         <query.version>2.0.0-BETA3</query.version>
-        <!--Plugin Versions-->
-        <driver-binary-downloader-maven-plugin.version>1.0.17</driver-binary-downloader-maven-plugin.version>
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
-        <!--Configuration Properties-->
-        <overwrite.binaries>false</overwrite.binaries>
-        <read.timeout>30000</read.timeout>
-        <connection.timeout>40000</connection.timeout>
-        <retry.attempts>4</retry.attempts>
+
+        <os>mac</os>
         <browser>firefox</browser>
+
+        <webdriver.gecko.driver>drivers/${os}/firefox/0.24.0/geckodriver</webdriver.gecko.driver>
+        <webdriver.chrome.driver>drivers/${os}/chrome/74.0.3729.6/chromedriver</webdriver.chrome.driver>
+
         <threads>1</threads>
         <remote>false</remote>
         <headless>true</headless>
@@ -102,53 +73,54 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+                <version>3.8.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>browser</name>
+                                    <value>${browser}</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>selenium-tests</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>${java.version}</source>
-                            <target>${java.version}</target>
-                        </configuration>
-                        <version>${maven-compiler-plugin.version}</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.lazerycode.selenium</groupId>
-                        <artifactId>driver-binary-downloader-maven-plugin</artifactId>
-                        <version>${driver-binary-downloader-maven-plugin.version}</version>
-                        <configuration>
-                            <rootStandaloneServerDirectory>${project.basedir}/src/test/resources/selenium_standalone_binaries</rootStandaloneServerDirectory>
-                            <downloadedZipFileDirectory>${project.basedir}/src/test/resources/selenium_standalone_zips</downloadedZipFileDirectory>
-                            <customRepositoryMap>${project.basedir}/src/test/resources/RepositoryMap.xml</customRepositoryMap>
-                            <overwriteFilesThatExist>${overwrite.binaries}</overwriteFilesThatExist>
-                            <onlyGetDriversForHostOperatingSystem>false</onlyGetDriversForHostOperatingSystem>
-                            <fileDownloadRetryAttempts>${retry.attempts}</fileDownloadRetryAttempts>
-                            <fileDownloadReadTimeout>${read.timeout}</fileDownloadReadTimeout>
-                            <operatingSystems>
-                                <windows>true</windows>
-                                <linux>true</linux>
-                                <mac>true</mac>
-                            </operatingSystems>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>selenium</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${maven-failsafe-plugin.version}</version>
+                        <version>2.20.1</version>
                         <configuration>
                             <parallel>methods</parallel>
                             <threadCount>${threads}</threadCount>
@@ -168,10 +140,7 @@
 
                                 <!--Set properties passed in by the driver binary downloader-->
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
-                                <webdriver.ie.driver>${webdriver.ie.driver}</webdriver.ie.driver>
-                                <webdriver.opera.driver>${webdriver.opera.driver}</webdriver.opera.driver>
                                 <webdriver.gecko.driver>${webdriver.gecko.driver}</webdriver.gecko.driver>
-                                <webdriver.edge.driver>${webdriver.edge.driver}</webdriver.edge.driver>
                             </systemPropertyVariables>
                         </configuration>
                         <executions>
