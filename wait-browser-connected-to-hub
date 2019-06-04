@@ -31,9 +31,9 @@ retry() {
 }
 
 check_connected () {
-  curl --silent --fail --connect-timeout 40 $hub_url/grid/console | grep "browserName: $browserName" > /dev/null
+  curl --fail --connect-timeout 40 $hub_url/grid/console | grep "browserName: $browserName" > /dev/null
 }
 
-retry 5 1 check_connected
+retry 15 30 check_connected
 
 echo >&2 "$(date +%Y%m%dt%H%M%S) Chrome is conneted to hub"

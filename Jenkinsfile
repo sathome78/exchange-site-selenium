@@ -16,6 +16,11 @@ def selenium_browser_count(String count, String active) {
   }
 }
 
+def wait_browser_connected_to_hub(String browser_ulr, String browser_name) {
+  echo "wait_browser_connected_to_hub... (${browser_ulr} ${browser_name})"
+  sh "./wait-browser-connected-to-hub ${browser_ulr} ${browser_name}"
+}
+
 pipeline {
   agent {
     kubernetes {
@@ -177,12 +182,8 @@ pipeline {
                 sh "cd $HELM_REPO_PATH/k8s.service/helm/selenium && helm init --upgrade --client-only"
                 echo "Running helm dry-run deployment"
                 sh "cd $HELM_REPO_PATH/k8s.service/helm/selenium && /usr/local/bin/helm upgrade --install --dry-run $SERVICE_NAME --namespace $KUBERNETES_NAMESPACE  --set chrome.replicas=${env.CHROME_DESIRED_CONTAINER_COUNT_IF_ACTIVE} --set firefox.replicas=${env.FIREFOX_DESIRED_CONTAINER_COUNT_IF_ACTIVE} --set hub.service_name=$SERVICE_NAME --set chrome.resources.limits.cpu=$CHROME_CPU_LIMIT --set chrome.resources.limits.memory=$CHROME_MEM_LIMIT --set firefox.resources.limits.cpu=$FIREFOX_CPU_LIMIT --set firefox.resources.limits.memory=$FIREFOX_MEM_LIMIT --set gridBrowserTimeout=${params.HUB_BROWSERTIMEOUT} --set gridTimeout=${params.HUB_GRIDTIMEOUT} . "
-                echo "Running helm dry-run deployment"
-                sh "cd $HELM_REPO_PATH/k8s.service/helm/selenium && /usr/local/bin/helm upgrade --install $SERVICE_NAME --namespace $KUBERNETES_NAMESPACE --set chrome.replicas=${env.CHROME_DESIRED_CONTAINER_COUNT_IF_ACTIVE} --set firefox.replicas=${env.FIREFOX_DESIRED_CONTAINER_COUNT_IF_ACTIVE} --set hub.service_name=$SERVICE_NAME --set chrome.resources.limits.cpu=$CHROME_CPU_LIMIT --set chrome.resources.limits.memory=$CHROME_MEM_LIMIT --set firefox.resources.limits.cpu=$FIREFOX_CPU_LIMIT --set firefox.resources.limits.memory=$FIREFOX_MEM_LIMIT --set gridBrowserTimeout=${params.HUB_BROWSERTIMEOUT} --set gridTimeout=${params.HUB_GRIDTIMEOUT} . "
-            }
-
-            script {
-                env.HUB_INTERNAL_DNS="$SERVICE_NAME"+"."+"$KUBERNETES_NAMESPACE"
+                echo "Running helm run deployment"
+                sh "cd $HELM_REPO_PATH/k8s.service/helm/selenium && /usr/local/bin/helm upgrade --install $SERVICE_NAME --namespace $KUBERNETES_NAMESPACE --set chrome.replicas=${env.CHROME_DESIRED_CONTAINER_COUNT_IF_ACTIVE} --set firefox.replicas=${env.FIREFOX_DESIRED_CONTAINER_COUNT_IF_ACTIVE} --set hub.service_name=$SERVICE_NAME --set chrome.resources.limits.cpu=$CHROME_CPU_LIMIT --set chrome.resources.limits.memory=$CHROME_MEM_LIMIT --set firefox.resources.limits.cpu=$FIREFOX_CPU_LIMIT --set firefox.resources.limits.memory=$FIREFOX_MEM_LIMIT --set gridBrowserTimeout=${params.HUB_BROWSERTIMEOUT} --set gridTimeout=${params.HUB_GRIDTIMEOUT} . --wait"
             }
         }
     }
@@ -194,8 +195,8 @@ pipeline {
                     steps {
                       container('maven-chrome') {
                         ansiColor('xterm') {
-                          sh './wait-browser-connected-to-hub http://${env.HUB_INTERNAL_DNS}:4444 chrome'
-                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Dthreads=${CHROME_THREADS_COUNT} -Dremote=true -DseleniumGridURL=http://${env.HUB_INTERNAL_DNS}:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=chrome -Dheadless=${CHROME_HEADLESS}'
+                          wait_browser_connected_to_hub('http://$SERVICE_NAME:4444', 'chrome')
+                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Dthreads=${CHROME_THREADS_COUNT} -Dremote=true -DseleniumGridURL=http://$SERVICE_NAME:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=chrome -Dheadless=${CHROME_HEADLESS}'
 
                         }
                       }
@@ -206,8 +207,8 @@ pipeline {
                     steps {
                       container('maven-firefox') {
                         ansiColor('xterm') {
-                          sh './wait-browser-connected-to-hub http://${env.HUB_INTERNAL_DNS}:4444 firefox'
-                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Dthreads=${FIREFOX_THREAD_COUNT} -Dremote=true -DseleniumGridURL=http://${env.HUB_INTERNAL_DNS}:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=firefox -Dheadless=${FIREFOX_HEADLESS}'
+                          wait_browser_connected_to_hub('http://$SERVICE_NAME:4444', 'firefox')
+                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Dthreads=${FIREFOX_THREAD_COUNT} -Dremote=true -DseleniumGridURL=http://$SERVICE_NAME:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=firefox -Dheadless=${FIREFOX_HEADLESS}'
                         }
                       }
                     }
@@ -234,8 +235,7 @@ pipeline {
 
         archiveArtifacts artifacts: 'target/screenshots/*.png', fingerprint: true, allowEmptyArchive: true
         archiveArtifacts artifacts: 'target/failsafe-reports/*.*', fingerprint: true, allowEmptyArchive: true
-      //   archiveArtifacts artifacts: '**/testng-results.xml', fingerprint: true, allowEmptyArchive: true
-      //   step([$class: 'Publisher', reportFilenamePattern: '**/testng-results.xml'])
+        step([$class: 'Publisher', reportFilenamePattern: 'target/failsafe-reports/testng-results.xml'])
       }
     }
 }
