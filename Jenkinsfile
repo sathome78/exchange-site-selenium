@@ -38,6 +38,11 @@ pipeline {
         description: 'Specify test profile'
       )
 
+      string(name: 'URL_TO_TEST',
+        defaultValue: "",
+        description: 'Specify Url to test'
+      )
+
       string(name: 'FIREFOX',
         defaultValue: "no",
         description: 'Run Firefox tests'
@@ -196,7 +201,7 @@ pipeline {
                       container('maven-chrome') {
                         ansiColor('xterm') {
                           wait_browser_connected_to_hub('http://$SERVICE_NAME:4444', 'chrome')
-                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Dthreads=${CHROME_THREADS_COUNT} -Dremote=true -DseleniumGridURL=http://$SERVICE_NAME:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=chrome -Dheadless=${CHROME_HEADLESS}'
+                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Durl_to_test=${URL_TO_TEST} -Dthreads=${CHROME_THREADS_COUNT} -Dremote=true -DseleniumGridURL=http://$SERVICE_NAME:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=chrome -Dheadless=${CHROME_HEADLESS}'
 
                         }
                       }
@@ -208,7 +213,7 @@ pipeline {
                       container('maven-firefox') {
                         ansiColor('xterm') {
                           wait_browser_connected_to_hub('http://$SERVICE_NAME:4444', 'firefox')
-                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Dthreads=${FIREFOX_THREAD_COUNT} -Dremote=true -DseleniumGridURL=http://$SERVICE_NAME:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=firefox -Dheadless=${FIREFOX_HEADLESS}'
+                          sh 'export MAVEN_OPTS="-XX:MaxPermSize=512m"; mvn -B clean verify -P${TEST_PROFILE} -Durl_to_test=${URL_TO_TEST} -Dthreads=${FIREFOX_THREAD_COUNT} -Dremote=true -DseleniumGridURL=http://$SERVICE_NAME:4444/wd/hub -Dsleep=0 -f pom.xml -Dbrowser=firefox -Dheadless=${FIREFOX_HEADLESS}'
                         }
                       }
                     }
