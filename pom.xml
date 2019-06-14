@@ -21,11 +21,11 @@
         <testng.version>6.14.3</testng.version>
         <query.version>2.0.0-BETA3</query.version>
 
-        <os>mac</os>
+        <os>win10</os>
         <browser>firefox</browser>
 
-        <webdriver.gecko.driver>drivers/${os}/firefox/0.24.0/geckodriver</webdriver.gecko.driver>
-        <webdriver.chrome.driver>drivers/${os}/chrome/74.0.3729.6/chromedriver</webdriver.chrome.driver>
+        <webdriver.gecko.driver>drivers/${os}/firefox/0.24.0/geckodriver.exe</webdriver.gecko.driver>
+        <webdriver.chrome.driver>drivers/${os}/chrome/75.0.3770.8/chromedriver.exe</webdriver.chrome.driver>
 
         <threads>1</threads>
         <remote>false</remote>
@@ -70,6 +70,12 @@
             <artifactId>query</artifactId>
             <version>${query.version}</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/fluent-hc -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>4.5.2</version>
         </dependency>
     </dependencies>
 
