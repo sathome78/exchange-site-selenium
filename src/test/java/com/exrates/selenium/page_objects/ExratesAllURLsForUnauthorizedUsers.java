@@ -24,7 +24,7 @@ public class ExratesAllURLsForUnauthorizedUsers {
         Path path = Paths.get(ClassLoader.getSystemResource(file).toURI());
         Stream<String> lineStream = Files.lines(path);
         return lineStream
-                .filter(url -> url.contains("https://") && url.toLowerCase().contains("exrates"))
+                .filter(url -> url.contains("https://") && url.contains("exrates"))
                 .filter(urlsFilter)
                 .collect(Collectors.toSet());
     }

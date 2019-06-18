@@ -10,7 +10,7 @@ Drivers are in directory `drivers`
 
         mvn clean verify -Pselenium-tests
         
-- The maven-failsafe-plugin will pick up any files that end in IT by default.  You can customise this is you would prefer to use a custom identifier for your Selenium tests.
+- The maven-failsafe-plugin will pick up any files that end in ```*IT.java``` by default.  You can customise this is you would prefer to use a custom identifier for your Selenium tests.
 
 ### Anything else?
 

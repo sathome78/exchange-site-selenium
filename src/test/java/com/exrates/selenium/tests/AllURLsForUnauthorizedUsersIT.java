@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class AllURLsForUnauthorizedUsers {
+public class AllURLsForUnauthorizedUsersIT {
     private ExratesAllURLsForUnauthorizedUsers exrates;
     private String file = "links_list.txt";
     private Object[] urls;
