@@ -15,9 +15,10 @@
    Available Profiles:
    
     prod = https://exrates.me
+    
+    demo = https://demo.exrates.me
    
-    uat = http://preprod.exapp
+    preprod = http://dev6.exapp
    
-    dev = http://dev1.exrates.tech
+    staging = http://dev8.exapp
    
-    devtest = http://qa1.exrates.tech

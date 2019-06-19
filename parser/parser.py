@@ -370,9 +370,9 @@ def mute_report(local_urls):
 
 def main(argv):
     domains = {"prod": "https://exrates.me",
-               "uat": "http://preprod.exapp",
-               "dev": "http://dev1.exrates.tech",
-               "devtest": "http://qa1.exrates.tech"}
+               "demo": "https://demo.exrates.me",
+               "preprod": "http://dev6.exapp",
+               "staging": "http://dev8.exapp"}
 
     # define the program description
     text = 'A Python program that crawls a website and recursively checks links to map all internal and external ' \
