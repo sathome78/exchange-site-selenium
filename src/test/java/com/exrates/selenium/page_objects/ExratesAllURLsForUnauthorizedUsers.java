@@ -18,14 +18,15 @@ public class ExratesAllURLsForUnauthorizedUsers {
 
     public Set<String> parseURLs(String file) throws Exception {
         Predicate<String> urlsFilter = Pattern
-                .compile("^(https?:\\/\\/)[a-z0-9_\\.]")
+                .compile("^(http|https?:\\/\\/)[a-z0-9_\\.]")
                 .asPredicate();
 
         Path path = Paths.get(ClassLoader.getSystemResource(file).toURI());
         Stream<String> lineStream = Files.lines(path);
         return lineStream
-                .filter(url -> url.contains("https://") && url.contains("exrates"))
                 .filter(urlsFilter)
+                .filter(url -> url.contains("https://") && !url.contains("linkedin.com") && !url.contains("linkedin.com") && !url.contains("void(0)"))
+                .filter(url -> url.contains("exrates") || url.contains("t.me"))
                 .collect(Collectors.toSet());
     }
 
