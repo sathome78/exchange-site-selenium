@@ -25,7 +25,7 @@ public class ExratesAllURLsForUnauthorizedUsers {
         Stream<String> lineStream = Files.lines(path);
         return lineStream
                 .filter(urlsFilter)
-                .filter(url -> url.contains("https://") && !url.contains("linkedin.com") && !url.contains("linkedin.com") && !url.contains("void(0)"))
+                .filter(url -> url.contains("https://") && !url.contains("linkedin.com") && !url.contains("void(0)"))
                 .filter(url -> url.contains("exrates") || url.contains("t.me"))
                 .collect(Collectors.toSet());
     }
@@ -44,11 +44,5 @@ public class ExratesAllURLsForUnauthorizedUsers {
             // skip
         }
         return statusCode;
-    }
-
-    public Map<Integer, List<String>> sortURLsByResponseCode(String file) throws Exception {
-        return parseURLs(file)
-                .stream()
-                .collect(Collectors.groupingBy(this::getResponseCode));
     }
 }
