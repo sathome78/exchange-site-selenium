@@ -1,19 +1,19 @@
 package com.exrates.selenium.tests;
 
-import com.exrates.selenium.page_objects.ExratesAllURLsForUnauthorizedUsers;
+import com.exrates.selenium.page_objects.URLsAutomation;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class AllURLsForUnauthorizedUsersIT {
-    private ExratesAllURLsForUnauthorizedUsers exrates;
+public class URLsAutomationIT {
+    private URLsAutomation exrates;
     private String file = "links_list.txt";
     private Object[] urls;
 
     @BeforeClass
     public void init() throws Exception {
-        exrates = new ExratesAllURLsForUnauthorizedUsers();
+        exrates = new URLsAutomation();
         urls = exrates.parseURLs(file).toArray();
     }
 
